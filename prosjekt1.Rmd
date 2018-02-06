@@ -1,0 +1,42 @@
+---
+title: "Project 1"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library("ggplot2")
+```
+
+## Problem 2 - Linear regression 
+```{r}
+data = read.table("https://www.math.ntnu.no/emner/TMA4268/2018v/data/SYSBPreg3uid.txt")
+modelA=lm(-1/sqrt(SYSBP) ~ ., data = data)
+summary(modelA)
+```
+## a)
+"Estimate" is the estimated coeffictients obtaining the minimum residual square error with the data set. The "intercept" is the constant term in the regression model.
+
+The "standard error" is the our estimated standard deviation in the estimated coefficients. It is given as the square root of $\hat{Var}(\hat{{\beta}_{j}}) = c_{jj}{\hat{\sigma}}^2$, where $c_{ij} = \sqrt{ ((X^TX)^{-1})_{ij} }$ and ${\hat{\sigma}}^2 = (Y - \hat{Y})^T(Y - \hat{Y}) / (n - p - 1)$.
+
+The "t value" is for every coefficent $j$, $\frac{ \hat{{\beta}_j} }{ \sqrt{c_{jj}} \hat{ \sigma } }$ which is t distributed with $n - p - 1$ degrees of freedom under the assumtion that $H_0$ is true, that is, ${\beta}_j$ truly is $0$. "Pr(t > |t|)" is then the probability of obeserving such an extreme tvalue given that $H_0$ is ture. Hence Pr(t > |t|) $:= P(|T_{n - p - 1}| \geq \frac{ \hat{{\beta}_j} }{ \sqrt{c_{jj}} \hat{ \sigma } }) = 2P(T_{n - p - 1} \geq |\frac{ \hat{{\beta}_j} }{ \sqrt{c_{jj}} \hat{ \sigma } }|)$.
+
+The "Residual standard error" is our estimate for the variance of Y. The standard error squared is given as ${ \hat{\sigma} }^2 = (Y - \hat{Y})^T(Y - \hat{Y}) / (n - p - 1)$.
+
+The "F - statistic" is given as $ F =  $ and is Fisher distributed with 
+
+## b)
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+
+
+
+
+
+
+
