@@ -5,36 +5,143 @@ output:
   html_document: default
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library("ggplot2")
 ```
 
-## Problem 2 - Linear regression 
-```{r}
+\section*{Problem 2 - Linear regression} 
+```{r, echo = FALSE}
 data = read.table("https://www.math.ntnu.no/emner/TMA4268/2018v/data/SYSBPreg3uid.txt")
-modelA=lm(-1/sqrt(SYSBP) ~ ., data = data)
+modelA = lm(-1/sqrt(SYSBP) ~ ., data = data)
 summary(modelA)
 ```
-## a)
-"Estimate" is the estimated coeffictients obtaining the minimum residual square error with the data set. The "intercept" is the constant term in the regression model.
 
-The "standard error" is the our estimated standard deviation in the estimated coefficients. It is given as the square root of $\hat{Var}(\hat{{\beta}_{j}}) = c_{jj}{\hat{\sigma}}^2$, where $c_{ij} = \sqrt{ ((X^TX)^{-1})_{ij} }$ and ${\hat{\sigma}}^2 = (Y - \hat{Y})^T(Y - \hat{Y}) / (n - p - 1)$.
+\section*{a)}
 
-The "t value" is for every coefficent $j$, $\frac{ \hat{{\beta}_j} }{ \sqrt{c_{jj}} \hat{ \sigma } }$ which is t distributed with $n - p - 1$ degrees of freedom under the assumtion that $H_0$ is true, that is, ${\beta}_j$ truly is $0$. "Pr(t > |t|)" is then the probability of obeserving such an extreme tvalue given that $H_0$ is ture. Hence Pr(t > |t|) $:= P(|T_{n - p - 1}| \geq \frac{ \hat{{\beta}_j} }{ \sqrt{c_{jj}} \hat{ \sigma } }) = 2P(T_{n - p - 1} \geq |\frac{ \hat{{\beta}_j} }{ \sqrt{c_{jj}} \hat{ \sigma } }|)$.
+\begin{itemize}
 
-The "Residual standard error" is our estimate for the variance of Y. The standard error squared is given as ${ \hat{\sigma} }^2 = (Y - \hat{Y})^T(Y - \hat{Y}) / (n - p - 1)$.
+\item The fittet model has the equation $\hat{Y} = X\hat{\beta}$, where $\hat{\beta} = (X^TX)^{-1}X^TY$, X is the $n \times (p + 1)$ design matrix, and Y is the corresponding response values.
 
-The "F - statistic" is given as $ F =  $ and is Fisher distributed with 
+\item "Estimate" is the estimated coeffictients obtaining the minimum residual square error with the data set. The "intercept" is the constant term in the regression model.
 
-## b)
+\item The "standard error" is the estimated standard deviation in the estimated coefficients. It is given as the square root of $\hat{Var}(\hat{{\beta}_{j}}) = c_{jj}{\hat{\sigma}}^2$, where $c_{ij} = ((X^TX)^{-1})_{ij}$ and ${\hat{\sigma}}^2 = (Y - \hat{Y})^T(Y - \hat{Y}) / (n - p - 1)$.
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+\item The "t value" is for every coefficent $j$, $\frac{ \hat{{\beta}_j} }{ \sqrt{c_{jj}} \hat{ \sigma } }$ which is t distributed with $n - p - 1$ degrees of freedom under the assumtion that $H_0$ is true, that is, ${\beta}_j$ truly is $0$. "Pr(t > |t|)" is then the probability of obeserving such an extreme t value given that $H_0$ is true. Hence Pr(>|t|) $:= P(|T_{n - p - 1}| \geq |\frac{ \hat{{\beta}_j} }{ \sqrt{c_{jj}} \hat{ \sigma } }|) = 2P(T_{n - p - 1} \geq |\frac{ \hat{{\beta}_j} }{ \sqrt{c_{jj}} \hat{ \sigma } }|)$.
 
+\item The "Residual standard error" is our estimate for the variance of Y. The standard error squared is given as ${ \hat{\sigma} }^2 = (Y - \hat{Y})^T(Y - \hat{Y}) / (n - p - 1)$.
 
+\item The "F - statistic" is used to check the hypothesis of all betas being 0. In the table it is given as $\frac{(TSS - RSS) / p} {RSS / (n - p - 1)}$, which is Fisher distributed with degrees of freedom $p$ and $n - p - 1$, where $TSS := \sum_{i = 1}^{n}(y_i - \bar{y})^2$, and $RSS := \sum_{i = 1}^{n}(y_i - \hat{y}_i)^2$.
 
+\end{itemize}
 
+\section{b)}
 
+\begin{itemize}
+
+\item The proportion of variability explained by the model is given by the $R^2 -$ statistic $:= (TSS - RSS) / TSS$, here being equal to 0.2494. Hence our model explains approximately $25\%$ of the variance in the response value.
+
+\end{itemize}
+```{r, echo = FALSE}
+# residuls vs fitted
+p1 <- ggplot(modelA, aes(.fitted, .resid)) + geom_point(pch = 21) + 
+  geom_hline(yintercept = 0, linetype = "dashed") + 
+  geom_smooth(se = FALSE, col = "red", size = 0.5, method = "loess") + 
+  labs(x = "Fitted values", y = "Residuals", title = "Fitted values vs. residuals",
+       subtitle = deparse(modelA$call))
+# qq-plot of residuals
+p2 <- ggplot(modelA, aes(sample = .stdresid)) +
+  stat_qq(pch = 19) + 
+  geom_abline(intercept = 0, slope = 1, linetype = "dotted") +
+  labs(x = "Theoretical quantiles", y = "Standardized residuals", title = "Normal Q-Q", subtitle = deparse(modelA$call))
+p1
+p2
+```
+\begin{itemize}
+
+\item Looking at the plot of residuals vs. fitted values we note that it does not appear to be a correlation between the value of the response and the variance of the response, and the mean appears to be 0. This fits well with the assumtion of the noise being normally distributed with mean 0 and constant variance.
+
+The QQ-plots strengthens our belief in this assumtion, as the points form a linear line.
+
+\end{itemize}
+
+```{r, echo = FALSE}
+modelB <- lm(SYSBP ~ ., data = data)
+summary(modelB)
+# residuls vs fitted
+p1 <- ggplot(modelB, aes(.fitted, .resid)) + geom_point(pch = 21) + 
+  geom_hline(yintercept = 0, linetype = "dashed") + 
+  geom_smooth(se = FALSE, col = "red", size = 0.5, method = "loess") + 
+  labs(x = "Fitted values", y = "Residuals", title = "Fitted values vs. residuals",
+       subtitle = deparse(modelB$call))
+# qq-plot of residuals
+p2 <- ggplot(modelB, aes(sample = .stdresid)) +
+  stat_qq(pch = 19) + 
+  geom_abline(intercept = 0, slope = 1, linetype = "dotted") +
+  labs(x = "Theoretical quantiles", y = "Standardized residuals", title = "Normal Q-Q", subtitle = deparse(modelB$call))
+# p1
+p2
+```
+
+\begin{itemize}
+
+\item The RSE is considerably larger for model B, that is, the estimated variance in both the response and our estimated coefficients are larger in this model. Looking at the diagnostic plots of model B we also note that the QQ-plot suggests that these residuals are not normally distributed. Clearly we prefer model A to make inference about systolic blood pressure, for this model brings more likely coefficent estimates and follows the noise assumptions better.
+
+\end{itemize}
+
+\section*{c)}
+
+\begin{itemize}
+
+\item The estimate for ${\hat{\beta}}_{BMI}$ is $3.087\cdot 10^{-4}$. 
+
+\item We interpret the estimated coefficient ${\hat{\beta}}_{BMI}$ as the coefficient of the variable containing the value of BMI in the linear expression for $-1 / \sqrt{SYSBP}$, that is, the impact of change in BMI on the response
+
+\[
+{\hat{\beta}}_{BMI} = \frac{\partial (-1/\sqrt{SYSBP)}}{\partial BMI}
+\]
+
+\item Since ${\hat{\beta}}_{BMI} \sim N({\beta}_{BMI}, {\sigma}^2c_{BMI})$, where $c_{BMI} := \textrm{diagonal entry corresponding to BMI of }(X^TX)^{-1}$ we have
+
+\[
+\frac{ {(\hat{\beta}}_{BMI} - {\beta}_{BMI}) / (\sigma \sqrt{c_{BMI}}) }{ \sqrt{ \frac{1}{{\sigma}^2} RSS / (n - p - 1) } } = \frac{ {\hat{\beta}}_{BMI} - {\beta}_{BMI} }{\sqrt{\frac{RSS}{n - p - 1}c_{BMI}}} \sim T_{n - p - 1}
+\]
+
+It follows that
+
+\[
+Pr({\beta}_{BMI} \in ({\hat{\beta}}_{BMI} - {\hat{\sigma}} \sqrt{c_{BMI}} t_{0.995, 2593}, {\hat{\beta}}_{BMI} - {\hat{\sigma}} \sqrt{c_{BMI}} t_{0.005, 2593} )) = 0.99
+\]
+
+Setting $t_{0.005, 2593} = -2.577727$ and $t_{0.995, 2593} = 2.577727$, we compute the interval to be $(2.325282\cdot 10^{-4}, 3.848718\cdot 10^{-4})$. This interval tells us that with probability $0.99$, the true value of the coefficient is contained in this interval.
+
+\item We note that if $H_0$ is true, the center of the t distribution for prediction of $\hat{\beta}_{BMI}$ would be $0$, but the degrees of freedom the same as for this prediction. Hence, a $99\%$ prediction interval for the estimated coefficient would in this case be $(-|2.325282\cdot 10^{-4} -  3.087\cdot 10^{-4}|, |3.848718\cdot 10^{-4} - 3.087\cdot 10^{-4}|) = (-7.61718\cdot 10^{-5}, 7.61718\cdot 10^{-5})$. Clearly our observed value is outside the interval, meaning that the p value must be less than or equal to $0.01$.
+
+\end{itemize}
+
+\section*{d)}
+
+\begin{itemize}
+
+\item Model A predicts the response of these values to be $-0.08667246$, which corresponds to a SYSBP of $133.1183$. 
+
+\item Let $\tilde{Y_0}$ be a new observation of $-1 / \sqrt{SYSBP}$ corresponding to the point ${x_0}$. Since we have $\tilde{Y_0} - {x_0}^T\beta \sim N(0, {\sigma}^2(1 + {x_0}^T(X^TX)^{-1}{x_0}))$ we get
+
+\[
+\frac{(\tilde{Y_0} - {x_0}^T\beta) / (\sigma \sqrt{1 + {x_0}^T(X^TX)^{-1}x_0})}{\sqrt{\frac{1}{{\sigma}^2} RSS / (n - p - 1)}} = \frac{ \tilde{Y_0} - {x_0}^T\beta }{ \hat{\sigma}\sqrt{1 + {x_0}^T(X^TX)^{-1}x_0} } \sim T_{n - p - 1}
+\]
+
+letting $\tilde{Y_0} = -\frac{1}{\sqrt{Y_0}}$ we obtain the following prediction interval for SYSBP at $x_0$
+
+\[
+Pr(Y_0 \in \bigg( \frac{1} {({x_0}^T\beta + \hat{\sigma}kt_{0.05, 2593})^2 }, \frac{1} {({x_0}^T + \hat{\sigma} kt_{0.95, 2593})^2}\bigg) ) = 0.90, \\ k = \sqrt{1 + {x_0}^T(X^TX)^{-1}x_0}
+\]
+
+Setting $t_{0.05, 2593} = -1.645441$ and $t_{0.95, 2593} = 1.645441$ we compute the following prediction interval $(107.9250, 168.2845)$. 
+
+\item ??????????????????????????
+
+\end{itemize}
 
 
 
