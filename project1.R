@@ -29,6 +29,9 @@ right <- 1 / ( t(x0) %*% beta + sigmahat * k * tvalues[2] )^2
 # print(tvalues)
 # print (c(left, right))
 
+wine = read.csv("https://www.math.ntnu.no/emner/TMA4268/2018v/data/Comp1Wine.csv",sep=" ")
+wine$class = as.factor(wine$class-1)
+colnames(wine) = c("y","x1","x2")
 
 
 

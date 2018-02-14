@@ -1,7 +1,7 @@
 ---
 subtitle: "TMA4268 Statistical Learning V2018"
 title: "Compulsory exercise 1: Group X"
-author: "NN1, NN and NN3"
+author: "NN1, NN2 and NN3"
 date: "Date when you hand in"
 output: #3rd letter intentation hierarchy
   # prettydoc::html_pretty:
@@ -14,7 +14,11 @@ editor_options:
 
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-library("ggplot2")
+library(ggplot2)
+library(GGally)
+library(class)
+library(MASS)
+library(pROC)
 ```
 
 \section*{Problem 2 - Linear regression} 
@@ -86,7 +90,6 @@ p2 <- ggplot(modelB, aes(sample = .stdresid)) +
   stat_qq(pch = 19) + 
   geom_abline(intercept = 0, slope = 1, linetype = "dotted") +
   labs(x = "Theoretical quantiles", y = "Standardized residuals", title = "Normal Q-Q", subtitle = deparse(modelB$call))
-# p1
 p2
 ```
 
@@ -135,13 +138,13 @@ Setting $t_{0.005, 2593} = -2.577727$ and $t_{0.995, 2593} = 2.577727$, we compu
 \item Let $\tilde{Y_0}$ be a new observation of $-1 / \sqrt{SYSBP}$ corresponding to the point ${x_0}$. Since we have $\tilde{Y_0} - {x_0}^T\beta \sim N(0, {\sigma}^2(1 + {x_0}^T(X^TX)^{-1}{x_0}))$ we get
 
 \[
-\frac{(\tilde{Y_0} - {x_0}^T\beta) / (\sigma \sqrt{1 + {x_0}^T(X^TX)^{-1}x_0})}{\sqrt{\frac{1}{{\sigma}^2} RSS / (n - p - 1)}} = \frac{ \tilde{Y_0} - {x_0}^T\beta }{ \hat{\sigma}\sqrt{1 + {x_0}^T(X^TX)^{-1}x_0} } \sim T_{n - p - 1}
+\frac{(\tilde{Y_0} - {x_0}^T\hat{\beta}) / (\sigma \sqrt{1 + {x_0}^T(X^TX)^{-1}x_0})}{\sqrt{\frac{1}{{\sigma}^2} RSS / (n - p - 1)}} = \frac{ \tilde{Y_0} - {x_0}^T\hat{\beta} }{ \hat{\sigma}\sqrt{1 + {x_0}^T(X^TX)^{-1}x_0} } \sim T_{n - p - 1}
 \]
 
 letting $\tilde{Y_0} = -\frac{1}{\sqrt{Y_0}}$ we obtain the following prediction interval for SYSBP at $x_0$
 
 \[
-Pr(Y_0 \in \bigg( \frac{1} {({x_0}^T\beta + \hat{\sigma}kt_{0.05, 2593})^2 }, \frac{1} {({x_0}^T + \hat{\sigma} kt_{0.95, 2593})^2}\bigg) ) = 0.90, \\ k = \sqrt{1 + {x_0}^T(X^TX)^{-1}x_0}
+Pr(Y_0 \in \bigg( \frac{1} {({x_0}^T\hat{\beta} + \hat{\sigma}kt_{0.05, 2593})^2 }, \frac{1} {({x_0}^T\hat{\beta} + \hat{\sigma} kt_{0.95, 2593})^2}\bigg) ) = 0.90, \\ k = \sqrt{1 + {x_0}^T(X^TX)^{-1}x_0}
 \]
 
 Setting $t_{0.05, 2593} = -1.645441$ and $t_{0.95, 2593} = 1.645441$ we compute the following prediction interval $(107.9250, 168.2845)$. 
@@ -150,52 +153,68 @@ Setting $t_{0.05, 2593} = -1.645441$ and $t_{0.95, 2593} = 1.645441$ we compute 
 
 \end{itemize}
 
-\section{Problem 3 - Classification}
+\section*{Problem 3 - Classification}
 
-\subsection{a)}
+\section*{a)}
 
 \begin{itemize}
 
-  \item We want to show that $$logit(p_i)=log(\frac{p_i}{1-p_i})$$ is a linear function, where $$p_i=\frac{e^{\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}}}{1+e^{\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}}}.$$ 
-We see that $$1-p_i=1-\frac{e^{\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}}}{1+e^{\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}}}=\frac{1}{1+e^{\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}}}.$$ 
+\item We want to show that $logit(p_i)=log(\frac{p_i}{1-p_i})$ is a linear function, where $p_i=\frac{e^{\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}}}{1+e^{\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}}}$. We see that 
 
-Thus $$logit(p_i)=log\bigg(\frac{p_i}{1-p_i}\bigg)=log\Bigg(\frac{\frac{e^{\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}}}{1+e^{\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}}}}{\frac{1}{1+e^{\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}}}}\Bigg)= log(e^{\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}})=\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}.$$
-So $logit(p_i)$ is linear.
+\[
+1-p_i=1-\frac{e^{\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}}}{1+e^{\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}}}=\frac{1}{1+e^{\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}}}.
+\]
 
-\item 
+and thus
+
+\[
+\textrm{logit}(p_i)=\log\bigg(\frac{p_i}{1-p_i}\bigg)=\log\Bigg(\frac{\frac{e^{\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}}}{1+e^{\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}}}}{\frac{1}{1+e^{\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}}}}\Bigg)= \log(e^{\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}})=\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}.
+\]
+
+So $\textrm{logit}(p_i)$ is linear.
 
 \end{itemize}
+
 ```{r, echo = FALSE, warning=FALSE, message=FALSE}
-library(GGally)
-library(class)
-library(MASS)
-library(pROC)
-wine=read.csv("https://www.math.ntnu.no/emner/TMA4268/2018v/data/Comp1Wine.csv",sep=" ")
+wine = read.csv("https://www.math.ntnu.no/emner/TMA4268/2018v/data/Comp1Wine.csv",sep=" ")
 wine$class = as.factor(wine$class-1)
 colnames(wine) = c("y","x1","x2")
-# p <- ggpairs(wine, ggplot2::aes(color=y))
+#p <- ggpairs(wine, ggplot2::aes(color=y))
 
 n = dim(wine)[1]
-set.seed(1729) #to get the same order if you rerun - but you change this to your favorite number
+set.seed(1729) 
 ord = sample(1:n) #shuffle
 test = wine[ord[1:(n/2)],]
 
 train = wine[ord[((n/2)+1):n],]
 
 fit <- glm(y ~., family="binomial",data=wine)
+summary(fit)
 ```
+
 \begin{itemize}
 
-\item $\hat{\beta_1}$ and $\hat{\beta_2}$ can be interpreted as how the odds vary. The odds is given as $\frac{p_i}{1-p_i}$. As shown in the class notes, if the covariate $x_{1i}$ is increased by one unit, the odds is multiplied by $exp(\beta_1)$. The same is true for $x_{1i}$ and $exp(\beta_1)$. $\hat{\beta_1}$ and $\hat{\beta_2}$ are estimators of $\beta_1$ and $\beta_2$ and are estimated using the training data.
+\item $\hat{\beta_1}$ and $\hat{\beta_2}$ can be interpreted as how the odds vary with $x_i1$, $x_i2$ respectively. The odds is given as $\frac{p_i}{1-p_i}$. If the covariate $x_{i1}$ is increased by one unit, the odds is multiplied by $exp(\beta_1)$. The same is true for $x_{i2}$ and $exp(\beta_2)$. $hat{\beta}_i, \ i = 0, 1, 2$ and are estimates for the parameters $\beta$ in the model, and are estimated by maximum likelihood on the intital data.
 
-\item We find the formula for the class boundary by solving $\hat{Pr}(Y=1|\mathbf{x})=0.5$. This gives 
-$$
-  \frac{e^{\hat{\beta_0}+\hat{\beta_1}x_{i1}+\hat{\beta_2} x_{i2}}}{1+e^{\hat{\beta_0}+\hat{\beta_1}x_{i1}+\hat{\beta_2} x_{i2}}} = 0.5,$$so$$
+\item We find the formula for the class boundary by solving $\hat{Pr}(Y = 1| X) = 0.5$. This gives 
+
+\[
+  \frac{e^{\hat{\beta_0}+\hat{\beta_1}x_{i1}+\hat{\beta_2} x_{i2}}}{1+e^{\hat{\beta_0}+\hat{\beta_1}x_{i1}+\hat{\beta_2} x_{i2}}} = 0.5,
+\]
+
+so
+
+\[
   0.5e^{\hat{\beta_0}+\hat{\beta_1}x_{i1}+\hat{\beta_2} x_{i2}}=0.5.
-$$
+\]
+
 This means that we need $\hat{\beta_0}+\hat{\beta_1}x_{i1}+\hat{\beta_2}x_{i2} = 0$. Thus
-$$\mathbf{x}_2=-\frac{\hat{\beta_0}}{\hat{\beta_2}} - \frac{\hat{\beta_1}}{\hat{\beta_2}}\mathbf{x}_1,$$
-and the formula is linear.
+
+\[
+x_2 = -\frac{\hat{\beta_0}}{\hat{\beta_2}} - \frac{\hat{\beta_1}}{\hat{\beta_2}}x_1,
+\]
+
+and we see that the boundary is linear.
 
 \item The training data is plotted with the class boundary.
 
@@ -204,18 +223,24 @@ and the formula is linear.
 ```{r, echo = FALSE}
 slope = -fit$coefficients[2] / fit$coefficients[3]
 intercept = -fit$coefficients[1] / fit$coefficients[3]
-g1 = ggplot(data = train, aes(x = x1, y = x2, color = y)) + geom_point(data = train, pch = 3) + geom_abline(slope=slope,intercept=intercept)+ggtitle("Training data and logistic boundary")
+g1 = ggplot(data = train, aes(x = x1, y = x2, color = y)) + geom_point(data = train, pch = 3) +
+  geom_abline(slope = slope, intercept = intercept) + ggtitle("Training data and logistic boundary")
+
 print(g1)
-print(slope)
-print(intercept)
 ```
 
 \begin{itemize}
-\item From the summary we find that $\hat{\beta_0}= 3.184$, $\hat{\beta_1}= 0.265$, $\hat{\beta_2}=-1.890 $. The probability of class 1 given $x_1=17$ and $x_2=3$ is then
-$$
-p=\frac{e^{\hat{\beta_0}+\hat{\beta_1}x_{1}+\hat{\beta_2} x_{2}}}{1+e^{\hat{\beta_0}+\hat{\beta_1}x_{1}+\hat{\beta_2} x_{2}}} = 0.882.
-$$
-The interpretation of this is that based on the stimated $\beta$-values, the probability of class one given $\mathbf{x}$ is $88.2%$.
+
+\item From the summary we find that $\hat{\beta_0} = 3.184$, $\hat{\beta_1} = 0.265$, $\hat{\beta_2} = -1.890$. The probability of class 1 given $x_1 = 17$ and $x_2 = 3$ is then
+
+\[
+p = \frac{e^{\hat{\beta_0}+\hat{\beta_1}x_{1}+\hat{\beta_2} x_{2}}}{1+e^{\hat{\beta_0}+\hat{\beta_1}x_{1}+\hat{\beta_2} x_{2}}} = 0.882.
+\]
+
+The interpretation of this is that based on the model, the probability of this point belonging to class one is $88.2\%$.
+
+\item The predicted probabilities for the test set is visualized in a confusion matrix with a cutoff of $0.5$.
+
 \end{itemize}
 
 ```{r, echo = FALSE}
@@ -223,13 +248,33 @@ X = data.matrix(test)
 Y <- X[,1]
 X[,1] = 1
 betahat = as.matrix( fit$coefficients )
-Yhat = X %*% betahat
-pred = exp(Yhat) / (1 + exp(Yhat))
+dot = X %*% betahat
+pred = exp(dot) / (1 + exp(dot))
 testclass = ifelse(pred > 0.5, 1, 0)
 t = table(test$y, testclass)
+
+t
 ```
 
-* The predicted probabilities for the test set is visualized in a confusion matrix with a cutoff of $0.5$.
 
 
+\begin{itemize}
 
+\section*{c)}
+
+\begin{itemize}
+
+\item ${\pi}_k$ is the probability of an observation begin from class $k$, that is, the probability of getting a sample from a certain wine, wine $1$ or $2$ in thise case. ${\mu}_k$ is the expected value of a point from class $k$, in our case the expected values of $(x1, x2)$ corresponding to wine $1$ and wine $2$. $\Sigma$ is the variance matrix of the distribution of a class, here assumed to be equal for every class. Hence we assume that the variance in observations of $(x1, x2)$ are the same for both wine $1$ and $2$. $f_k(x)$ is the distribution of points $(x1, x2)$, coming from class $k$, i. e. wine $1$ and $2$, which we assume takes the form of the normal distribution.
+
+\item To estimate ${\pi}_k$ we consider the proportion of observations coming from class $k$, that is, ${\pi}_k \approx \frac{n_k}{n}$. We compute $\hat{\pi}_1 = 59 / 130 = 0.4538$ and $\hat{pi}_2 = 71 / 130 = 0.5461$. To estimate ${\mu_k}$ we consider the estimated mean of points coming from class $k$, that is ${\mu}_k \approx \frac{1}{n_k} \sum_{i, y_i = k} x_i$, which we compute to be: $\hat{\mu}_1 = (17.0373, 5.5283)^T$, $\hat{\mu}_2 = (20.2380, 3.0866)^T$. To estimate $\Sigma$ we consider the estimated variance for each class, $\hat{\Sigma}_k := \frac{1}{n_k - 1}\sum_{i, y_i = k} (X_i - \hat{\mu}_k)(X_i - \hat{\mu}_k)^T$, and compute the mean: 
+\[
+\hat{\Sigma} = \sum_{k = 1}^2 \frac{n_k - 1}{n - 2} \hat{\Sigma}_k = 
+\begin{bmatrix}
+  116.9176 & -109.3347 \\
+  -109.3347 & 111.0952
+\end{bmatrix} 
+\]
+
+\item asf
+
+\end{itemize}
