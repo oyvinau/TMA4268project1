@@ -1,8 +1,15 @@
 ---
-title: "Project 1"
-output:
-  pdf_document: default
-  html_document: default
+subtitle: "TMA4268 Statistical Learning V2018"
+title: "Compulsory exercise 1: Group X"
+author: "NN1, NN and NN3"
+date: "Date when you hand in"
+output: #3rd letter intentation hierarchy
+  # prettydoc::html_pretty:
+  #   theme: tactile
+  #   highlight: github
+  pdf_document:
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include = FALSE}
@@ -17,7 +24,7 @@ modelA = lm(-1/sqrt(SYSBP) ~ ., data = data)
 summary(modelA)
 ```
 
-\section*{a)}
+\subsection*{a)}
 
 \begin{itemize}
 
@@ -35,7 +42,7 @@ summary(modelA)
 
 \end{itemize}
 
-\section{b)}
+\subsection{b)}
 
 \begin{itemize}
 
@@ -89,7 +96,7 @@ p2
 
 \end{itemize}
 
-\section*{c)}
+\subsection*{c)}
 
 \begin{itemize}
 
@@ -143,7 +150,86 @@ Setting $t_{0.05, 2593} = -1.645441$ and $t_{0.95, 2593} = 1.645441$ we compute 
 
 \end{itemize}
 
+\section{Problem 3 - Classification}
 
+\subsection{a)}
+
+\begin{itemize}
+
+  \item We want to show that $$logit(p_i)=log(\frac{p_i}{1-p_i})$$ is a linear function, where $$p_i=\frac{e^{\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}}}{1+e^{\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}}}.$$ 
+We see that $$1-p_i=1-\frac{e^{\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}}}{1+e^{\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}}}=\frac{1}{1+e^{\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}}}.$$ 
+
+Thus $$logit(p_i)=log\bigg(\frac{p_i}{1-p_i}\bigg)=log\Bigg(\frac{\frac{e^{\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}}}{1+e^{\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}}}}{\frac{1}{1+e^{\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}}}}\Bigg)= log(e^{\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}})=\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}.$$
+So $logit(p_i)$ is linear.
+
+\item 
+
+\end{itemize}
+```{r, echo = FALSE, warning=FALSE, message=FALSE}
+library(GGally)
+library(class)
+library(MASS)
+library(pROC)
+wine=read.csv("https://www.math.ntnu.no/emner/TMA4268/2018v/data/Comp1Wine.csv",sep=" ")
+wine$class = as.factor(wine$class-1)
+colnames(wine) = c("y","x1","x2")
+# p <- ggpairs(wine, ggplot2::aes(color=y))
+
+n = dim(wine)[1]
+set.seed(1729) #to get the same order if you rerun - but you change this to your favorite number
+ord = sample(1:n) #shuffle
+test = wine[ord[1:(n/2)],]
+
+train = wine[ord[((n/2)+1):n],]
+
+fit <- glm(y ~., family="binomial",data=wine)
+```
+\begin{itemize}
+
+\item $\hat{\beta_1}$ and $\hat{\beta_2}$ can be interpreted as how the odds vary. The odds is given as $\frac{p_i}{1-p_i}$. As shown in the class notes, if the covariate $x_{1i}$ is increased by one unit, the odds is multiplied by $exp(\beta_1)$. The same is true for $x_{1i}$ and $exp(\beta_1)$. $\hat{\beta_1}$ and $\hat{\beta_2}$ are estimators of $\beta_1$ and $\beta_2$ and are estimated using the training data.
+
+\item We find the formula for the class boundary by solving $\hat{Pr}(Y=1|\mathbf{x})=0.5$. This gives 
+$$
+  \frac{e^{\hat{\beta_0}+\hat{\beta_1}x_{i1}+\hat{\beta_2} x_{i2}}}{1+e^{\hat{\beta_0}+\hat{\beta_1}x_{i1}+\hat{\beta_2} x_{i2}}} = 0.5,$$so$$
+  0.5e^{\hat{\beta_0}+\hat{\beta_1}x_{i1}+\hat{\beta_2} x_{i2}}=0.5.
+$$
+This means that we need $\hat{\beta_0}+\hat{\beta_1}x_{i1}+\hat{\beta_2}x_{i2} = 0$. Thus
+$$\mathbf{x}_2=-\frac{\hat{\beta_0}}{\hat{\beta_2}} - \frac{\hat{\beta_1}}{\hat{\beta_2}}\mathbf{x}_1,$$
+and the formula is linear.
+
+\item The training data is plotted with the class boundary.
+
+\end{itemize}
+
+```{r, echo = FALSE}
+slope = -fit$coefficients[2] / fit$coefficients[3]
+intercept = -fit$coefficients[1] / fit$coefficients[3]
+g1 = ggplot(data = train, aes(x = x1, y = x2, color = y)) + geom_point(data = train, pch = 3) + geom_abline(slope=slope,intercept=intercept)+ggtitle("Training data and logistic boundary")
+print(g1)
+print(slope)
+print(intercept)
+```
+
+\begin{itemize}
+\item From the summary we find that $\hat{\beta_0}= 3.184$, $\hat{\beta_1}= 0.265$, $\hat{\beta_2}=-1.890 $. The probability of class 1 given $x_1=17$ and $x_2=3$ is then
+$$
+p=\frac{e^{\hat{\beta_0}+\hat{\beta_1}x_{1}+\hat{\beta_2} x_{2}}}{1+e^{\hat{\beta_0}+\hat{\beta_1}x_{1}+\hat{\beta_2} x_{2}}} = 0.882.
+$$
+The interpretation of this is that based on the stimated $\beta$-values, the probability of class one given $\mathbf{x}$ is $88.2%$.
+\end{itemize}
+
+```{r, echo = FALSE}
+X = data.matrix(test)
+Y <- X[,1]
+X[,1] = 1
+betahat = as.matrix( fit$coefficients )
+Yhat = X %*% betahat
+pred = exp(Yhat) / (1 + exp(Yhat))
+testclass = ifelse(pred > 0.5, 1, 0)
+t = table(test$y, testclass)
+```
+
+* The predicted probabilities for the test set is visualized in a confusion matrix with a cutoff of $0.5$.
 
 
 
