@@ -39,11 +39,29 @@ ord = sample(1:n)
 test = wine[ord[1:(n/2)],]
 train = wine[ord[((n/2)+1):n],]
 
-wine_lda <- lda(y ~ x1 + x2, data = train) #, prior = c(pi1hat, 1 - pi1hat))
-pred <- predict(wine_lda, data = test)$class
-ytest <- test[,1]
-t <- table(ytest, pred)
-print(t)
+knn9 = knn(train = train[,-1], test = test[,-1], k = 9, cl = train$y, prob = FALSE)
+
+X = data.matrix(test)
+Y <- X[,1]
+X[,1] = 1
+betahat = as.matrix(fit$coefficients)
+dot = X %*% betahat
+predglm = as.numeric( exp(dot) / (1 + exp(dot)) )
+
+glmroc=roc(response=test$y,predictor=predglm)
+plot(glmroc)
+auc(glmroc)
+KNN3 = knn(train = train[,-1], test = test[,-1], k = 3, cl = train$y, prob = F)
+KNN3probwinning = attributes(knn(train = train[,-1], test = test[,-1], k = 3, cl = train$y, prob = TRUE))$prob
+KNN3prob <- ifelse(KNN3 == "0", 1-KNN3probwinning, KNN3probwinning)
+KNN3roc=roc(response=test$y,predictor=KNN3prob) 
+# plot(KNN3roc)
+# auc(KNN3roc)
+ltrain=lda(y~x1+x2,data=train)
+lpred=predict(object = ltrain, newdata = test)$posterior[,1]
+lroc=roc(response=test$y,lpred)
+# plot(lroc)
+# auc(lroc)
 
 
 

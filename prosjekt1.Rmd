@@ -40,7 +40,7 @@ summary(modelA)
 
 \item The "t value" is for every coefficent $j$, $\frac{ \hat{{\beta}_j} }{ \sqrt{c_{jj}} \hat{ \sigma } }$ which is t distributed with $n - p - 1$ degrees of freedom under the assumtion that $H_0$ is true, that is, ${\beta}_j$ truly is $0$. "Pr(t > |t|)" is then the probability of obeserving such an extreme t value given that $H_0$ is true. Hence Pr(>|t|) $:= P(|T_{n - p - 1}| \geq |\frac{ \hat{{\beta}_j} }{ \sqrt{c_{jj}} \hat{ \sigma } }|) = 2P(T_{n - p - 1} \geq |\frac{ \hat{{\beta}_j} }{ \sqrt{c_{jj}} \hat{ \sigma } }|)$.
 
-\item The "Residual standard error" is our estimate for the variance of Y. The standard error squared is given as ${ \hat{\sigma} }^2 = (Y - \hat{Y})^T(Y - \hat{Y}) / (n - p - 1)$.
+\item The "Residual standard error" is our estimate for the standard deviation of Y. The standard error squared is given as ${ \hat{\sigma} }^2 = (Y - \hat{Y})^T(Y - \hat{Y}) / (n - p - 1)$.
 
 \item The "F - statistic" is used to check the hypothesis of all betas being 0. In the table it is given as $\frac{(TSS - RSS) / p} {RSS / (n - p - 1)}$, which is Fisher distributed with degrees of freedom $p$ and $n - p - 1$, where $TSS := \sum_{i = 1}^{n}(y_i - \bar{y})^2$, and $RSS := \sum_{i = 1}^{n}(y_i - \hat{y}_i)^2$.
 
@@ -149,7 +149,7 @@ Pr(Y_0 \in \bigg( \frac{1} {({x_0}^T\hat{\beta} + \hat{\sigma}kt_{0.05, 2593})^2
 
 Setting $t_{0.05, 2593} = -1.645441$ and $t_{0.95, 2593} = 1.645441$ we compute the following prediction interval $(107.9250, 168.2845)$. 
 
-\item ??????????????????????????
+\item This interval is very large numericaly but also in the state of the person having this blood pressure. It ranges from healty to close to lethal, and it is just a $90\%$ prediction interval. In other words it is not particularly useful. 
 
 \end{itemize}
 
@@ -159,7 +159,7 @@ Setting $t_{0.05, 2593} = -1.645441$ and $t_{0.95, 2593} = 1.645441$ we compute 
 
 \begin{itemize}
 
-\item We want to show that $logit(p_i)=log(\frac{p_i}{1-p_i})$ is a linear function, where $p_i=\frac{e^{\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}}}{1+e^{\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}}}$. We see that 
+\item We want to show that $\textrm{logit}(p_i)=\log(\frac{p_i}{1-p_i})$ is a linear function, where $p_i=\frac{e^{\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}}}{1+e^{\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}}}$. We see that 
 
 \[
 1-p_i=1-\frac{e^{\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}}}{1+e^{\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}}}=\frac{1}{1+e^{\beta_0+\beta_1x_{i1}+\beta_2 x_{i2}}}.
@@ -187,13 +187,13 @@ test = wine[ord[1:(n/2)],]
 
 train = wine[ord[((n/2)+1):n],]
 
-fit <- glm(y ~., family="binomial",data=wine)
+fit <- glm(y ~., family="binomial",data=train)
 summary(fit)
 ```
 
 \begin{itemize}
 
-\item $\hat{\beta_1}$ and $\hat{\beta_2}$ can be interpreted as how the odds vary with $x_{i1}$, $x_{i2}$ respectively. The odds is given as $\frac{p_i}{1-p_i}$. If the covariate $x_{i1}$ is increased by one unit, the odds is multiplied by $exp(\beta_1)$. The same is true for $x_{i2}$ and $exp(\beta_2)$. $hat{\beta}_i, \ i = 0, 1, 2$ and are estimates for the parameters $\beta$ in the model, and are estimated by maximum likelihood on the intital data.
+\item $\hat{\beta_1}$ and $\hat{\beta_2}$ can be interpreted as how the odds vary with $x_{i1}$, $x_{i2}$ respectively. The odds is given as $\frac{p_i}{1-p_i}$. If the covariate $x_{i1}$ is increased by one unit, the odds is multiplied by $\exp(\beta_1)$. The same is true for $x_{i2}$ and $\exp(\beta_2)$. $hat{\beta}_i, \ i = 0, 1, 2$ and are estimates for the parameters $\beta$ in the model, and are estimated by maximum likelihood on the training data.
 
 \item We find the formula for the class boundary by solving $\hat{Pr}(Y = 1| X) = 0.5$. This gives 
 
@@ -230,15 +230,15 @@ g1
 
 \begin{itemize}
 
-\item From the summary we find that $\hat{\beta_0} = 3.184$, $\hat{\beta_1} = 0.265$, $\hat{\beta_2} = -1.890$. The probability of class 1 given $x_1 = 17$ and $x_2 = 3$ is then
+\item From the summary we find that $\hat{\beta_0} = 2.1431$, $\hat{\beta_1} = 0.3245$, $\hat{\beta_2} = -1.9216$. The probability of class 1 given $x_1 = 17$ and $x_2 = 3$ is then
 
 \[
-p = \frac{e^{\hat{\beta_0}+\hat{\beta_1}x_{1}+\hat{\beta_2} x_{2}}}{1+e^{\hat{\beta_0}+\hat{\beta_1}x_{1}+\hat{\beta_2} x_{2}}} = 0.882.
+p = \frac{e^{\hat{\beta_0}+\hat{\beta_1}x_{1}+\hat{\beta_2} x_{2}}}{1+e^{\hat{\beta_0}+\hat{\beta_1}x_{1}+\hat{\beta_2} x_{2}}} = 0.8693.
 \]
 
-The interpretation of this is that based on the model, the probability of this point belonging to class one is $88.2\%$.
+The interpretation of this is that based on the model, the probability of this point belonging to class one is $86.9\%$.
 
-\item The predicted probabilities for the test set is visualized in a confusion matrix with a cutoff of $0.5$.
+\item The predicted probabilities for the test set is visualized in a confusion matrix with a cut-off of $0.5$. The sensitivity is then $22 / 27 = 0.8148$, and specificity is $33 / 38 = 0.8684$. Since the sensitivity and specificity is high, the classification model appears to fit the dataset well. Perhaps a linear boundary is fitting.
 
 \end{itemize}
 
@@ -248,13 +248,47 @@ Y <- X[,1]
 X[,1] = 1
 betahat = as.matrix(fit$coefficients)
 dot = X %*% betahat
-pred = exp(dot) / (1 + exp(dot))
-testclass = ifelse(pred > 0.5, 1, 0)
+predglm = exp(dot) / (1 + exp(dot))
+testclass = ifelse(predglm > 0.5, 1, 0)
 t = table(test$y, testclass)
-
 t
 ```
 
+\section*{b)}
+
+\begin{itemize}
+
+\item The expression
+
+\[
+P(Y = j | X = x_0) = \frac{1}{K} \sum_{i \in N_0} I(y_i = j)
+\]
+
+returns the proporiton of the $K$ nearest neighbours of $x_0$ belonging to class $j$. $K$ is the number of neighbours we are considering, and the set $N_0$ contains all these neigbours. $I(y_i = j)$ is an indictor function taking the value $1$ when the argument is true, and $0$ otherwise.
+
+\item We have fitted the model below.
+
+\item For $K = 3$, the confusion table is shown below. The sensitivity and specificty is respectively $23 / 27 = 0.8519$ and $29 / 38 = 0.7632$. It scores a bit lower than classification by logistic regression, but it appears to perform ok.
+
+\end{itemize}
+
+```{r}
+knn3 = knn(train = train[,-1], test = test[,-1], k = 3, cl = train$y, prob = FALSE)
+t <- table(test$y, knn3)
+t
+```
+
+\begin{itemize}
+
+\item We repeat with $K = 9$. The confusion table is shown below. The sensitivity and specificity is now respectively $23 / 27 = 0.8519$ and $31 / 38 = 0.8158$. This model has higher sensitivity and specificity than the $3$-nearest neighbour model, and we therefore prefer this one. If we choose $K$ very small, we risk overfitting the data, and with very large $K$ the model is possibly not flexible enough. We therefore search for the optimal $K$.
+
+\end{itemize}
+
+```{r}
+knn9 = knn(train = train[,-1], test = test[,-1], k = 9, cl = train$y, prob = FALSE)
+t <- table(test$y, knn9)
+t
+```
 
 \section*{c)}
 
@@ -326,7 +360,7 @@ and finally
 \log(\pi_0) - \frac{1}{2}{\mu_0}^T{\Sigma}^{-1}\mu_0 + {\mu_0}^T{\Sigma}^{-1}x = {\delta}_0(x) = \log(\pi_1) - \frac{1}{2}{\mu_1}^T{\Sigma}^{-1}\mu_1 + {\mu_1}^T{\Sigma}^{-1}x = {\delta}_1(x)
 \]
 
-\item Let $\hat{\delta}_k(x) := \log(\hat{\pi}_k) - \frac{1}{2}(x - \hat{\mu}_k)^T{\hat{\Sigma}}^{-1}(x - \hat{\mu_k}))$, then this descision boundary is given by
+\item We note that this descision rule is the same as classifying to the class with highest $\hat{\delta}_k(x) := \log(\hat{\pi}_k) - \frac{1}{2}(x - \hat{\mu}_k)^T{\hat{\Sigma}}^{-1}(x - \hat{\mu_k}))$. We have
 
 \[
 \hat{Pr}(Y = 1 | X) = \frac{\pi_1\hat{f}_1(x)}{\sum_{i = 0}^{1}\pi_i \hat{f}_i(x)} = \frac{\exp(\hat{\delta_1}(x))}{\sum_{i = 0}^1\exp(\hat{\delta_i}(x))} = 0.5
@@ -356,7 +390,7 @@ that is
 \frac{1}{2}({\hat{\mu}_0}^T {\hat{\Sigma}}^{-1}\hat{\mu_0} - {\hat{\mu}_1}^T {\hat{\Sigma}}^{-1}\hat{\mu_1}) + \log\bigg(\frac{\hat{\pi}_0}{\hat{\pi}_1}\bigg) + ({\hat{\mu}_1}^T{\hat{\Sigma}}^{-1} - {\hat{\mu}_0}^T{\hat{\Sigma}}^{-1})x = 0
 \]
 
-Inserting our obtained estimates from the training set we get the boudary
+Inserting our estimates from the training set we get the boudary
 
 \[
 x_2 = 0.1711x_1 + 1.1205
@@ -390,12 +424,12 @@ wine_lda <- lda(y ~ x1 + x2, data = train)
 
 \begin{itemize}
 
-\item The confusion table is show below. We get a sesitivity of $12 / 27 = 0.4444$, and a specificity of $18 / 38 = 0.4737$. The performance is bad compared to the logistic regression and KNN. Perhaps this method is not flexible enough for this dataset. 
+\item The confusion table is show below. We get a sesitivity of $22 / 27 = 0.8148$, and a specificity of $34 / 38 = 0.8947$. The performance is good compared to the logistic regression and KNN. Perhaps the data fit a linear model, and the normal distribution assumtion is not so far off. 
 
 \end{itemize}
 
 ```{r, echo = FALSE}
-predicted = predict(wine_lda, data = test)$class
+predicted = predict(wine_lda, newdata = test)$class
 t = table(test$y, predicted)
 t
 ```
@@ -408,5 +442,44 @@ t
 
 \section*{d)}
 
+\begin{itemize}
 
+\item To get in indication of the performance of the different classification methods, we list their sensitivity and specificity
+
+\end{itemize}
+
+```{r, echo = FALSE}
+x <- matrix(c( 22/27, 33/38, 23/27, 31/38, 22/27, 34/38), byrow = TRUE, ncol = 2)
+rownames(x) <- c("Logistic regression", "KNN (K = 9)", "LDA")
+colnames(x) <- c("Sensitivity", "Specificity")
+x
+```
+
+We note that over all, the methods based on a linear descision boundary scores the best, but the $9$-nearest neighbour is not far behind. The highest scoring is the LDA, and based on this table, this would be the preferred method. But since the race is so even it would be wrong to take any stong stance.
+
+\begin{itemize}
+
+\item A reciever operating characteristics curve is plot of sensitivity vs. specificity for a classifier, as we let the cut-off take on values in $[0, 1]$. An ROC curve is useful, since it indicates if there excist a particular cut-off giving both high sensitivity and specificity, that is, if the curve takes on values in the top left corner of the plot. Below are ROC plots for the three classifiers. We note that all three classifiers have points on their ROC curve close to the top left corner, but the two linear descision boundaries get closest. These methods also have the highest AUC value, that is, the area under the ROC curve, which suggests they are the over-all best classifiers for general cut-off. 
+
+\end{itemize}
+
+```{r, echo = FALSE, warning = FALSE}
+glmroc=roc(response=test$y,predictor=predglm)
+"Logistic regression"
+plot(glmroc)
+auc(glmroc)
+KNN9 = knn(train = train[,-1], test = test[,-1], k = 9, cl = train$y, prob = F)
+KNN9probwinning = attributes(knn(train = train[,-1], test = test[,-1], k = 9, cl = train$y, prob = TRUE))$prob
+KNN9prob <- ifelse(KNN9 == "0", 1-KNN9probwinning, KNN9probwinning)
+KNN9roc=roc(response=test$y,predictor=KNN9prob) 
+"KNN (K = 9)"
+plot(KNN9roc)
+auc(KNN9roc)
+ltrain=lda(y~x1+x2,data=train)
+lpred=predict(object = ltrain, newdata = test)$posterior[,1]
+lroc=roc(response=test$y,lpred)
+"LDA"
+plot(lroc)
+auc(lroc)
+```
 
