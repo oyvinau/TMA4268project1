@@ -28,7 +28,7 @@ modelA = lm(-1/sqrt(SYSBP) ~ ., data = data)
 summary(modelA)
 ```
 
-\subsection*{a)}
+\section*{a)}
 
 \begin{itemize}
 
@@ -179,7 +179,6 @@ So $\textrm{logit}(p_i)$ is linear.
 wine = read.csv("https://www.math.ntnu.no/emner/TMA4268/2018v/data/Comp1Wine.csv",sep=" ")
 wine$class = as.factor(wine$class-1)
 colnames(wine) = c("y","x1","x2")
-#p <- ggpairs(wine, ggplot2::aes(color=y))
 
 n = dim(wine)[1]
 set.seed(1729) 
@@ -194,7 +193,7 @@ summary(fit)
 
 \begin{itemize}
 
-\item $\hat{\beta_1}$ and $\hat{\beta_2}$ can be interpreted as how the odds vary with $x_i1$, $x_i2$ respectively. The odds is given as $\frac{p_i}{1-p_i}$. If the covariate $x_{i1}$ is increased by one unit, the odds is multiplied by $exp(\beta_1)$. The same is true for $x_{i2}$ and $exp(\beta_2)$. $hat{\beta}_i, \ i = 0, 1, 2$ and are estimates for the parameters $\beta$ in the model, and are estimated by maximum likelihood on the intital data.
+\item $\hat{\beta_1}$ and $\hat{\beta_2}$ can be interpreted as how the odds vary with $x_{i1}$, $x_{i2}$ respectively. The odds is given as $\frac{p_i}{1-p_i}$. If the covariate $x_{i1}$ is increased by one unit, the odds is multiplied by $exp(\beta_1)$. The same is true for $x_{i2}$ and $exp(\beta_2)$. $hat{\beta}_i, \ i = 0, 1, 2$ and are estimates for the parameters $\beta$ in the model, and are estimated by maximum likelihood on the intital data.
 
 \item We find the formula for the class boundary by solving $\hat{Pr}(Y = 1| X) = 0.5$. This gives 
 
@@ -226,7 +225,7 @@ intercept = -fit$coefficients[1] / fit$coefficients[3]
 g1 = ggplot(data = train, aes(x = x1, y = x2, color = y)) + geom_point(data = train, pch = 3) +
   geom_abline(slope = slope, intercept = intercept) + ggtitle("Training data and logistic boundary")
 
-print(g1)
+g1
 ```
 
 \begin{itemize}
@@ -257,24 +256,135 @@ t
 ```
 
 
-
-\begin{itemize}
-
 \section*{c)}
 
 \begin{itemize}
 
-\item ${\pi}_k$ is the probability of an observation begin from class $k$, that is, the probability of getting a sample from a certain wine, wine $1$ or $2$ in thise case. ${\mu}_k$ is the expected value of a point from class $k$, in our case the expected values of $(x1, x2)$ corresponding to wine $1$ and wine $2$. $\Sigma$ is the variance matrix of the distribution of a class, here assumed to be equal for every class. Hence we assume that the variance in observations of $(x1, x2)$ are the same for both wine $1$ and $2$. $f_k(x)$ is the distribution of points $(x1, x2)$, coming from class $k$, i. e. wine $1$ and $2$, which we assume takes the form of the normal distribution.
+\item ${\pi}_k$ is the probability of an observation being from class $k$, that is, the probability of getting a sample from a certain wine, wine $1$ or $2$ in this case. ${\mu}_k$ is the expected value of a point from class $k$, in our case the expected values of $(x1, x2)$ corresponding to wine $1$ and wine $2$. $\Sigma$ is the variance matrix of the distribution of a class, here assumed to be equal for every class. Hence we assume that the variance in observations of $(x1, x2)$ are the same for both wine $1$ and $2$. $f_k(x)$ is the distribution of points $(x1, x2)$, coming from class $k$, i. e. wine $1$ and $2$, which we assume takes the form of the normal distribution with mean ${\mu}_k$ and variance $\Sigma$.
 
-\item To estimate ${\pi}_k$ we consider the proportion of observations coming from class $k$, that is, ${\pi}_k \approx \frac{n_k}{n}$. We compute $\hat{\pi}_1 = 59 / 130 = 0.4538$ and $\hat{pi}_2 = 71 / 130 = 0.5461$. To estimate ${\mu_k}$ we consider the estimated mean of points coming from class $k$, that is ${\mu}_k \approx \frac{1}{n_k} \sum_{i, y_i = k} x_i$, which we compute to be: $\hat{\mu}_1 = (17.0373, 5.5283)^T$, $\hat{\mu}_2 = (20.2380, 3.0866)^T$. To estimate $\Sigma$ we consider the estimated variance for each class, $\hat{\Sigma}_k := \frac{1}{n_k - 1}\sum_{i, y_i = k} (X_i - \hat{\mu}_k)(X_i - \hat{\mu}_k)^T$, and compute the mean: 
+\item To estimate ${\pi}_k$ we consider the proportion of observations coming from class $k$, that is, $\hat{\pi}_k = \frac{n_k}{n}$. We compute $\hat{\pi}_1 = 59 / 130 = 0.4538$ and $\hat{pi}_2 = 71 / 130 = 0.5461$. To estimate ${\mu_k}$ we consider the estimated mean of points coming from class $k$, that is $\hat{\mu}_k = \frac{1}{n_k} \sum_{i, y_i = k} x_i$, which we compute to be: $\hat{\mu}_1 = (17.0373, 5.5283)^T$, $\hat{\mu}_2 = (20.2380, 3.0866)^T$. To estimate $\Sigma$ we consider the estimated variance for each class, $\hat{\Sigma}_k := \frac{1}{n_k - 1}\sum_{i, y_i = k} (X_i - \hat{\mu}_k)(X_i - \hat{\mu}_k)^T$, and compute: 
 \[
 \hat{\Sigma} = \sum_{k = 1}^2 \frac{n_k - 1}{n - 2} \hat{\Sigma}_k = 
 \begin{bmatrix}
-  116.9176 & -109.3347 \\
-  -109.3347 & 111.0952
+  9.0744 & -0.4469 \\
+  -0.4469 & 1.1629
 \end{bmatrix} 
 \]
 
-\item asf
+\end{itemize}
+
+```{r, include = FALSE}
+X <- data.matrix(wine)
+n = 130; n1 = 59; n2 = 71
+X1 <- X[1:59,2:3]; X2 <- X[60:n,2:3]
+mu1hat <- t(X1) %*% rep(1, n1) / n1; mu2hat <- t(X2) %*% rep(1, n2) / n2
+X1 = X1 - matrix(rep(mu1hat, n1), byrow = TRUE, ncol = 2)
+X2 = X2 - matrix(rep(mu2hat, n2), byrow = TRUE, ncol = 2)
+S1 <- t(X1) %*% X1
+S2 <- t(X2) %*% X2
+S <- (S1 + S2) / (n - 2)
+```
+
+\begin{itemize}
+
+\item The desicion boundary is given by the equality $P(Y = 0 | X) = P(Y = 1 | X)$, that is
+
+\[
+\frac{\pi_0 f_0(x)}{\sum_{i = 0}^{1}\pi_kf_i(x)} = \frac{\pi_1 f_1(x)}{\sum_{i = 0}^{1}\pi_kf_i(x)}
+\]
+
+which simplifies to 
+
+\[
+\pi_0 \exp(\frac{1}{2}(x - \mu_0)^T{\Sigma}^{-1}(x - \mu_0)) = \pi_1 \exp(\frac{1}{2}(x - \mu_1)^T{\Sigma}^{-1}(x - \mu_1))
+\]
+
+taking the logarithm on both sides yields
+
+\[
+\log(\pi_0) + \frac{1}{2}({\mu_0}^T{\Sigma}^{-1}\mu_0 - 2{\mu_0}^T{\Sigma}^{-1}x + x^T{\Sigma}^{-1}x) = \log(\pi_1) + \frac{1}{2}({\mu_1}^T{\Sigma}^{-1}\mu_1 - 2{\mu_1}^T{\Sigma}^{-1}x + x^T{\Sigma}^{-1}x) 
+\]
+
+and finally
+
+\[
+\log(\pi_0) + \frac{1}{2}{\mu_0}^T{\Sigma}^{-1}\mu_0 - {\mu_0}^T{\Sigma}^{-1}x = {\delta}_0(x) = \log(\pi_1) + \frac{1}{2}{\mu_1}^T{\Sigma}^{-1}\mu_1 - {\mu_1}^T{\Sigma}^{-1}x = {\delta}_1(x)
+\]
+(feil i oppgaveteksten?)
+
+\item Let $\hat{\delta}_k(x) := \log(\hat{\pi}_k) - \frac{1}{2}(x - \hat{\mu}_k)^T{\hat{\Sigma}}^{-1}(x - \hat{\mu_k}))$, then this descisionboundary is given by
+
+\[
+\hat{Pr}(Y = 1 | X) = \frac{\pi_1\hat{f}_1(x)}{\sum_{i = 1}^{2}\pi_i \hat{f}_i(x)} = \frac{\exp(\hat{\delta_1}(x))}{\sum_{i = 1}^2\exp(\hat{\delta_i}(x))} = 0.5
+\]
+
+which gives
+
+\[
+\exp(\hat{\delta}_2(x)) = \exp(\hat{\delta}_1(x)),
+\]
+
+and thus
+
+\[
+\hat{\delta}_1(x) = \hat{\delta}_2(x).
+\]
+
+So the boundary becomes
+
+\[
+\log(\hat{\pi_1}) + \frac{1}{2}{\hat{\mu_1}}^T{\Sigma}^{-1}\hat{\mu_1} - {\hat{\mu_1}}^T{\hat{\Sigma}}^{-1}x = \log(\hat{\pi_2}) + \frac{1}{2}{\hat{\mu_2}}^T{\Sigma}^{-1}\hat{\mu_2} - {\hat{\mu_2}}^T{\hat{\Sigma}}^{-1}x
+\]
+
+that is
+
+\[
+\frac{1}{2}({\hat{\mu}_1}^T {\hat{\Sigma}}^{-1}\hat{\mu_1} - {\hat{\mu}_2}^T {\hat{\Sigma}}^{-1}\hat{\mu_2}) + \log\bigg(\frac{\hat{\pi}_1}{\hat{\pi}_2}\bigg) + ({\hat{\mu}_2}^T{\hat{\Sigma}}^{-1} - {\hat{\mu}_1}^T{\hat{\Sigma}}^{-1})x = 0
+\]
+
+Inserting our obtained estimates we get the boudary
+
+\[
+y = x
+\]
+
+\item The descision boundary with both the training and test observations is shown below
 
 \end{itemize}
+
+```{r, echo = FALSE}
+g1 = ggplot(data=train,aes(x=x1, y=x2, colour=y)) + geom_point(pch = 1)
+g1 = g1 + geom_point(data = test, pch = 3) + geom_abline(slope=slope,intercept=intercept)+ggtitle("train and test and logistic boundary")
+#g1
+```
+
+\begin{itemize}
+
+\item Done below
+
+\end{itemize}
+
+```{r}
+wine_lda <- lda(y ~ x1 + x2, data = wine, prior = c(0.4538, 1 - 0.4538))
+
+```
+
+\begin{itemize}
+
+\item The confusion table is show below
+
+\end{itemize}
+
+```{r, echo = FALSE}
+
+```
+
+\begin{itemize}
+
+\item The most important diffence in regard to using LDA or QDA would be that with QDA we expect the variance of the classes to be different, and hence use different covariance matrices.
+
+\end{itemize}
+
+\section*{d)}
+
+
