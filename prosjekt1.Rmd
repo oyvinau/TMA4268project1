@@ -361,25 +361,13 @@ and finally
 \log(\pi_0) - \frac{1}{2}{\mu_0}^T{\Sigma}^{-1}\mu_0 + {\mu_0}^T{\Sigma}^{-1}x = {\delta}_0(x) = \log(\pi_1) - \frac{1}{2}{\mu_1}^T{\Sigma}^{-1}\mu_1 + {\mu_1}^T{\Sigma}^{-1}x = {\delta}_1(x)
 \]
 
-\item We note that this descision rule is the same as classifying to the class with highest $\hat{\delta}_k(x) := \log(\hat{\pi}_k) - \frac{1}{2}(x - \hat{\mu}_k)^T{\hat{\Sigma}}^{-1}(x - \hat{\mu_k}))$. We have
+\item We note that this descision rule is the same as classifying to the class with highest probability. Let $\hat{\delta}_k(x) := \log(\hat{\pi_k}) - \frac{1}{2}{\hat{\mu_k}}^T{\Sigma}^{-1}\hat{\mu_k} + {\hat{\mu_k}}^T{\hat{\Sigma}}^{-1}x$. And so, by the previous task, we have
 
 \[
-\hat{Pr}(Y = 1 | X) = \frac{\pi_1\hat{f}_1(x)}{\sum_{i = 0}^{1}\pi_i \hat{f}_i(x)} = \frac{\exp(\hat{\delta_1}(x))}{\sum_{i = 0}^1\exp(\hat{\delta_i}(x))} = 0.5
+\hat{\delta}_0(x) = \hat{\delta}_1(x)
 \]
 
-which gives
-
-\[
-\exp(\hat{\delta}_1(x)) = \exp(\hat{\delta}_0(x)),
-\]
-
-and thus
-
-\[
-\hat{\delta}_0(x) = \hat{\delta}_1(x).
-\]
-
-So the boundary becomes
+and the boundary becomes
 
 \[
 \log(\hat{\pi_0}) + \frac{1}{2}{\hat{\mu_0}}^T{\Sigma}^{-1}\hat{\mu_0} - {\hat{\mu_0}}^T{\hat{\Sigma}}^{-1}x = \log(\hat{\pi_1}) + \frac{1}{2}{\hat{\mu_1}}^T{\Sigma}^{-1}\hat{\mu_1} - {\hat{\mu_1}}^T{\hat{\Sigma}}^{-1}x
