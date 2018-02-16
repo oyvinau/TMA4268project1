@@ -1,7 +1,7 @@
 ---
 subtitle: "TMA4268 Statistical Learning V2018"
 title: "Compulsory exercise 1: Group 31"
-author: "Øyvind Auestad and Erik Dengerud"
+author: "Ã˜yvind Auestad and Erik Dengerud"
 date: "16.02.2017"
 output: #3rd letter intentation hierarchy
   # prettydoc::html_pretty:
@@ -25,20 +25,20 @@ library(pROC)
 
 \subsection{a) Training and test MSE}
 
-* We observe from the figure that small values of $K$ gives a model whose mean over 1000 repetitions is close to the true function in shape. For larger values of $K$, we see that the model fails at the ends of the interval. We also see that the variance is high for small values of $K$, and smaller for larger ones. This is due to the bias-variance tradeoff, so the models are under- and over-fitted. 
+* We observe from the figure that small values of $K$ gives a model where the mean over 1000 repetitions is close to the true function in shape. For larger values of $K$, we see that the model fails at the ends of the interval. We also see that the variance is high for small values of $K$, and smaller for larger ones. This is due to the bias-variance tradeoff, so the model is under-fittes for large values and over-fitted for small values of $K$.
 A part of the interval close to the endpoints is observed to be constant for large values of $K$. This is because the k-nearest-neighbours algorithm is used to fit the model and the neighbours are the same for the points in this part of the interval for larger values. This contributes to the high bias in these models. This problem does not arise for smaller values since the number of neighbours used is less. 
   
-* Small values of $K$ gives the most flexible fit. A small value of $K$ has a high variance, lower bias, and a risk of overfitting. 
+* A small value of $K$ has a high variance, low bias and results in an over-fitted model. Small values of $K$ therefore gives the most flexible fit. 
 
-* From the figure we observe that MSE on the training set is increasing for all values of $K$. This is due to over-fitting on the low values of $K$. On the test set, we observe that the curve has a dip after the first few values, and then increases for every $K$. The trend from the single traing set fits well to the rest of the training sets. This can also be said about the test sets, where they all point to a good choise of $k$ being around $4$ for this data.
+* From the figure we observe that MSE on the training set is increasing for all values of $K$. This is due to over-fitting on the low values of $K$. On the test set, we observe that the curve has a dip after the first few values, and then increases for every $K$. The trend from the single training set fits well to the rest of the training sets. This can also be said about the test sets, where they all point to a good choice of $K$ being around $4$ for this data.
 
-* When evaluating the model, we fit our model to the training data and then evaluate it on the test set to find the a fitting flexibility. From the 1000 repetitions it seems that a $K$ around 4 results in the minimal MSE and this would thus be our choise of $k$. Since the 1000 repetitions somewhat concur on this value, this appears to be a good choise. 
+* When we evaluate a model, we fit our model to the training data and then evaluate it on the test set to find the optimal model. From the 1000 repetitions it seems that a $K$ around 4 results in the minimal MSE and this could therefore be the "best" choice. This is slightly less than for the single training set, but the 1000 repetitions gives a better estimated minimal as the noise mostly cancels with this many repetitions. 
 
 \subsection{b) Bias-variance trade-off}
 
-* The squared bias and variance is calculated from the predicted values and the true values at each $x$ in the following way. For each $m \in M$, a model is fitted. this model is then used to predict a value at each $x$. We now have 1000 predicted values at each $x$ and it is with these values we calculate the squared bias as we do with MSE and the variance at each $x$.
+* The squared bias and variance is calculated from the predicted values and the true values at each $x$ in the following way. For each $m \in M$, a model is fitted. this model is then used to predict a value at each $x$. We now have 1000 predicted values at each $x$ and it is with these values we calculate the squared bias using MSE and the variance at each $x$.
 
-* We look at the figure and observes what happens when the flexibility increases (K decreases). The squared bias decreases strictly to zero as $K$ approaches zero. This is because the model is overfitted for small $K$ as stated before. The variance increases as the flexibility increases. This is a consequence of the bias-variance trade off. The irreducible error is constant as this comes from the error term and can not be rerduced by the choice of the model. 
+* We look at the figure and observes what happens when the flexibility increases (K decreases). The squared bias decreases strictly to zero as $K$ approaches zero. This is because the model is overfitted for small $K$ as stated before. The variance increases as the flexibility increases. This is a consequence of the bias-variance trade off. The irreducible error is constant as this comes from the error term and can not be rerduced by the choice of model. 
 
 * A good model has as little bias and variance as possible. From the figure, this is obtained at a value around three to five where three seems to be the lowest. This corresponds well with what was found earlier.
 
@@ -218,7 +218,7 @@ summary(fit)
 
 \begin{itemize}
 
-\item $\hat{\beta_1}$ and $\hat{\beta_2}$ can be interpreted as how the odds vary with $x_{i1}$, $x_{i2}$ respectively. The odds is given as $\frac{p_i}{1-p_i}$. If the covariate $x_{i1}$ is increased by one unit, the odds is multiplied by $\exp(\beta_1)$. The same is true for $x_{i2}$ and $\exp(\beta_2)$. $hat{\beta}_i, \ i = 0, 1, 2$ and are estimates for the parameters $\beta$ in the model, and are estimated by maximum likelihood on the training data.
+\item $\hat{\beta_1}$ and $\hat{\beta_2}$ can be interpreted as how the odds vary with $x_{i1}$, $x_{i2}$ respectively. The odds is given as $\frac{p_i}{1-p_i}$. If the covariate $x_{i1}$ is increased by one unit, the odds is multiplied by $\exp(\beta_1)$. The same is true for $x_{i2}$ and $\exp(\beta_2)$. $\hat{\beta}_i, \ i = 0, 1, 2$ and are estimates for the parameters $\beta_i$ in the model, and are estimated by maximum likelihood on the training data.
 
 \item We find the formula for the class boundary by solving $\hat{Pr}(Y = 1| X) = 0.5$. This gives 
 
@@ -286,10 +286,10 @@ t
 \item The expression
 
 \[
-P(Y = j | X = x_0) = \frac{1}{K} \sum_{i \in N_0} I(y_i = j)
+P(Y = j | X = x_0) = \frac{1}{K} \sum_{i \in \mathcal{N}_0} I(y_i = j)
 \]
 
-returns the proporiton of the $K$ nearest neighbours of $x_0$ belonging to class $j$. $K$ is the number of neighbours we are considering, and the set $N_0$ contains all these neigbours. $I(y_i = j)$ is an indictor function taking the value $1$ when the argument is true, and $0$ otherwise.
+returns the proporiton of the $K$ nearest neighbours of $x_0$ belonging to class $j$. $K$ is the number of neighbours we are considering, and the set $\mathcal{N}_0$ contains all these neigbours. $I(y_i = j)$ is an indictor function taking the value $1$ when the argument is true, and $0$ otherwise.
 
 \item We have fitted the model below.
 
