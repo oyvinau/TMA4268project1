@@ -90,12 +90,13 @@ p2 <- ggplot(modelB, aes(sample = .stdresid)) +
   stat_qq(pch = 19) + 
   geom_abline(intercept = 0, slope = 1, linetype = "dotted") +
   labs(x = "Theoretical quantiles", y = "Standardized residuals", title = "Normal Q-Q", subtitle = deparse(modelB$call))
+p1
 p2
 ```
 
 \begin{itemize}
 
-\item The RSE is considerably larger for model B, that is, the estimated variance in both the response and our estimated coefficients are larger in this model. Looking at the diagnostic plots of model B we also note that the QQ-plot suggests that these residuals are not normally distributed. Clearly we prefer model A to make inference about systolic blood pressure, for this model brings more likely coefficent estimates and follows the noise assumptions better.
+\item Looking at the diagnostic plots of model B we note that the values in the residuals vs. fitted values plot does not appear to be scattered evenly around the $x$-axis, where the greatest deviances appear to be in the postitive half plane. The QQ-plot also suggests that these residuals are not normally distributed, and thus the regression model fails, and the inference in the summary is not valid. We note that the RSE is considerably larger as well, but since the response is different, it is hard to directly compare. Clearly we prefer model A to make inference about systolic blood pressure, for this model follows the regression error assumptions, where model B fails.
 
 \end{itemize}
 
