@@ -1,8 +1,8 @@
 ---
 subtitle: "TMA4268 Statistical Learning V2018"
-title: "Compulsory exercise 1: Group X"
-author: "NN1, NN2 and NN3"
-date: "Date when you hand in"
+title: "Compulsory exercise 1: Group 31"
+author: "Øyvind Auestad and Erik Dengerud"
+date: "16.02.2017"
 output: #3rd letter intentation hierarchy
   # prettydoc::html_pretty:
   #   theme: tactile
@@ -20,6 +20,30 @@ library(class)
 library(MASS)
 library(pROC)
 ```
+
+\section*{Problem 1 - Core concepts in statistical learning}
+
+\subsection{a) Training and test MSE}
+
+* We observe from the figure that small values of $K$ gives a model whose mean over 1000 repetitions is close to the true function in shape. For larger values of $K$, we see that the model fails at the ends of the interval. We also see that the variance is high for small values of $K$, and smaller for larger ones. This is due to the bias-variance tradeoff, so the models are under- and over-fitted. 
+A part of the interval close to the endpoints is observed to be constant for large values of $K$. This is because the k-nearest-neighbours algorithm is used to fit the model and the neighbours are the same for the points in this part of the interval for larger values. This contributes to the high bias in these models. This problem does not arise for smaller values since the number of neighbours used is less. 
+  
+* Small values of $K$ gives the most flexible fit. A small value of $K$ has a high variance, lower bias, and a risk of overfitting. 
+
+* From the figure we observe that MSE on the training set is increasing for all values of $K$. This is due to over-fitting on the low values of $K$. On the test set, we observe that the curve has a dip after the first few values, and then increases for every $K$. The trend from the single traing set fits well to the rest of the training sets. This can also be said about the test sets, where they all point to a good choise of $k$ being around $4$ for this data.
+
+* When evaluating the model, we fit our model to the training data and then evaluate it on the test set to find the a fitting flexibility. From the 1000 repetitions it seems that a $K$ around 4 results in the minimal MSE and this would thus be our choise of $k$. Since the 1000 repetitions somewhat concur on this value, this appears to be a good choise. 
+
+\subsection{b) Bias-variance trade-off}
+
+* The squared bias and variance is calculated from the predicted values and the true values at each $x$ in the following way. For each $m \in M$, a model is fitted. this model is then used to predict a value at each $x$. We now have 1000 predicted values at each $x$ and it is with these values we calculate the squared bias as we do with MSE and the variance at each $x$.
+
+* We look at the figure and observes what happens when the flexibility increases (K decreases). The squared bias decreases strictly to zero as $K$ approaches zero. This is because the model is overfitted for small $K$ as stated before. The variance increases as the flexibility increases. This is a consequence of the bias-variance trade off. The irreducible error is constant as this comes from the error term and can not be rerduced by the choice of the model. 
+
+* A good model has as little bias and variance as possible. From the figure, this is obtained at a value around three to five where three seems to be the lowest. This corresponds well with what was found earlier.
+
+* It seems from the figure that the curves has a minimum at around $K=10$. This is higher than what has been found earlier. If we return to figure 2, we see that this model is a good fit with low variance in the middle part of the interval. The difference between the model and the true function is higher near the endpoints, and this is what gives this model a higher MSE. The plots in figure 4 have values in the interval $[-2,2.5]$. This leads to a total at these values that is less than what we found earlier. The trend discussed is seen as the value $x_0=2.5$ makes the total skyrocket for higher values of $K$. It is clear that the optimal value of $K$ is dependent on the domain we think is the most relevant. This in turn depends on what the model should be used for. Thus $K=3$ seems to be a good choice if one needs a good fit also at the endpoints, but a choice og $K=10$ is better if one only need a good fit on the middle part of the interval.
+
 
 \section*{Problem 2 - Linear regression} 
 ```{r, echo = FALSE}
