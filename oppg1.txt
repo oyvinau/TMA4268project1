@@ -1,0 +1,39 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Ctrl+Shift+Enter*. 
+
+```{r}
+plot(cars)
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Ctrl+Alt+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Ctrl+Shift+K* to preview the HTML file).
+
+\section*{Problem 1 - Core concepts in statistical learning}
+
+\subsection{a) Training and test MSE}
+
+* We observe from the figure that small values of $K$ gives a model which mean over 1000 repetitions is close to the true function in shape. For larger values of $K$, we see that the model fails in the ends of the interval. We also see that the variance is high for the small values of $K$, and smaller for the large ones. This is due to the bias-variance tradeoff so the models are under- and over-fitted. 
+A part of the interval close to the endpoints is observed to be constant for the large values of $K$. This is because the k-nearest-neighbours algorithm is used to fit the model and the neighbours are the same for the points in this part of the interval for the larger values. This contributes to the high bias in these models. This problem does not arise for the smaller values since the number of neighbours used is less. 
+  
+* A small value of $K$ has a high variance, lower bias and an over-fitted model. Small values of $K$ therefore gives the most flexible fit.
+
+* From the figure we observe that MSE on the training set is increasing for all values of $K$. This is due to over-fitting on the low values of $K$. On the test set, we observe that the curve has a dip after the first few values, and then increases for every $K$. The single traing set fits well to the rest of the training sets. This can also be said about the test sets, but the single test set has a different minimum than the mean of the rest. 
+
+* In the process of evaluating a model, we fit our model to the training data and then evaluate it on the test set to find the optimal model. From the 1000 repetitions it seems that a $K$ around 3 results in the minimal MSE and this could therefore be the "best" choice. This is slightly less than for the single training set, but the 1000 repetitions gives a better estimated minimal as the noise mostly cancels with this many repetitions.
+
+\subsection{b) Bias-variance trade-off}
+
+* The squared bias and variance is calculated from the predicted values and the true values at each $x$ in the following way. For each $m \in M$, a model is fitted. this model is then used to predict a value at each $x$. We now have 1000 predicted values at each $x$ and it is with these values we calculate the squared bias as we do with MSE and the variance at each $x$.
+
+* We look at the figure and observes what happens when the flexibility increases (K decreases). The squared bias decreases strictly to zero as $K$ approaches zero. This is due because the model is overfitted for small $K$ as stated before. The variance increases as the flexibility increases. This is a consequence of the bias-variance trade off. The irreducible error is constant as this comes from the error term and can not be rerduced by the choice of the model. 
+
+* A good model has as little bias and variance as possible. From the figure, this is obtained at a value around three to five where three seems to be the lowest. This corresponds well with what was found earlier.
+
+* It is seen from the figure that the curves has a minimum at around $K=10$. This is higher than what has been found earlier. If we return to figure 2, we see that this model is a good fit with low variance in the middle part of the interval. The difference between the model and the true function is higher near the endpoints, and this is what gives this model a higher MSE. The plots in figure 4 have values in the interval $[-2,2.5]$. This leads to a total at these values that is less than what we found earlier. The trend discussed iis seen as the value $x_0=2.5$ makes the total skyrocket for higher values of $K$. It is clear that the optimal value of $K$ is dependent on the domain we think is the most relevant. This in turn depends on what the model should be used to. Thus $K=3$ seems to be a good choice if one needs a good fit also at the endpoints, but a choice og $K=10$ is better if one only need a good fit on the middle part of the interval.
